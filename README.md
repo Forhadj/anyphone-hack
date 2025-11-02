@@ -1,3 +1,3 @@
-git clone https://github.com/Forhadj/anyphone-hack.git
+git clone https://github.com/Forhadj/anyphone-hack.git 
 cd anyphone-hack
-python 
+ python sender.py
